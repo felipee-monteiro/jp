@@ -46,8 +46,9 @@ static int parse_space(char v) {
    }
 }
 
-static char* rmwhitespaces(const char *code) {
+static const char* rmwhitespaces(const char *code) {
    char result[1024];
+   const char* cp = &result;
    const char *empty_string = "";
 
    strncpy(result, code, sizeof(result));
@@ -61,13 +62,11 @@ static char* rmwhitespaces(const char *code) {
       }
    }
 
-   printf("result: %s", result);
-
-   return "teste";
+   return cp;
 }
 
 static Token tokenize(char *code) {
-   char *code_transformed = rmwhitespaces(code);
+   const char* code_transformed = rmwhitespaces(code);
 
    Token t = {NUMBER, "keyword"};
 
