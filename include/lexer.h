@@ -31,7 +31,6 @@ typedef struct {
 static const char* rmwhitespaces(const char *code) {
    char result[1024];
    const char* cp = &result;
-   const char *empty_string = "";
 
    strncpy(result, code, sizeof(result));
 
@@ -39,9 +38,12 @@ static const char* rmwhitespaces(const char *code) {
       char* vp = &result[i];
       const int spc = isspace((int)result[i]);
 
-      if (spc != 0x00) {
-         *vp = '\\';
+      if (spc == 0x00) {
+         //TODO: integrate tokenizer
+         continue;
       }
+
+      *vp = '\\';
    }
 
    return cp;
