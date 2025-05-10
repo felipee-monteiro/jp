@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <regex.h>
 #include <string.h>
+#include <errno.h>
+#include <limits.h>
 
 enum JsonToken {
    NUMBER,
@@ -29,6 +31,10 @@ typedef struct {
 }Token;
 
 static const char* rmwhitespaces(const char *code) {
+   if (strlen(code) >= CHAR_MAX) {
+      perror("Erro while trying to allocate string. Please verify the length");
+   }
+
    char result[1024];
    const char* cp = &result;
 
