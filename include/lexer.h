@@ -51,6 +51,7 @@ static int validate_open_and_close_ident(char o, char c) {
 static const char* rmwhitespaces(const char *code) {
    if (strlen(code) >= CHAR_MAX) {
       perror("Erro while trying to allocate string. Please verify the length");
+      exit(EXIT_FAILURE);
    }
 
    char result[1024];
