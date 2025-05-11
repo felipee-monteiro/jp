@@ -31,19 +31,16 @@ typedef struct {
    char *type;
 }Token;
 
-static int validate(char code) {
-   switch (code) {
-      case '{':
-         return 1;
-      case '[':
-         return 1;
-      case '}':
-         return 1;
-      case ']':
-         return 1;
-      default:
-         return 0;
+static int validate_open_and_close_ident(char o, char c) {
+   if (o == '{' && c == '}') {
+      return 1;
    }
+
+   if (o == '[' && c == ']') {
+      return 1;
+   }
+
+   return 0;
 }
 
 static const char* rmwhitespaces(const char *code) {
@@ -58,15 +55,13 @@ static const char* rmwhitespaces(const char *code) {
    strncpy(result, code, sizeof(result));
 
    for (int i = 0; i < strlen(result); i++) {
-      if (i == 0 || i == (strlen(result) - 1)) {
-         int is_valid = validate(result[i]);
+         int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
 
          if (!is_valid) {
             perror("Please specify a valid JSON string");
             exit(EXIT_FAILURE);
             break;
          }
-      }
 
       char* vp = &result[i];
       const int spc = isspace((int)result[i]);
