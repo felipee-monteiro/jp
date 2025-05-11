@@ -26,6 +26,11 @@ enum JsonToken {
    EOS
 };
 
+enum JS_TOKEN {
+   JS__OBJECT = 6,
+   JS__ARRAY = 5
+};
+
 typedef struct {
    enum JsonToken value;
    char *type;
