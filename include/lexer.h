@@ -6,6 +6,7 @@
 #include <regex.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <limits.h>
 
 enum JsonToken {
@@ -37,6 +38,7 @@ static const char* rmwhitespaces(const char *code) {
 
    char result[1024];
    const char* cp = &result;
+   char* empty_string = "";
 
    strncpy(result, code, sizeof(result));
 
@@ -49,7 +51,7 @@ static const char* rmwhitespaces(const char *code) {
          continue;
       }
 
-      *vp = '\\';
+      *vp = empty_string;
    }
 
    return cp;
@@ -57,9 +59,27 @@ static const char* rmwhitespaces(const char *code) {
 
 static Token tokenize(char *code) {
    const char* code_without_spaces = rmwhitespaces(code);
-   regex_t regexp;
+   const static char* comma_pattern = "^\"+$";
+   int exec_comma_regexp_status = 0;
+   regex_t comma_regexp;
 
-   printf("%s", code_without_spaces);
+   regcomp(&comma_regexp, comma_pattern, REG_NOSUB);
+
+   exec_comma_regexp_status = regexec(&comma_regexp, code_without_spaces, 0, NULL, 0);
+
+   if (exec_comma_regexp_status != 0) {
+      if (exec_comma_regexp_status == REG_NOMATCH) {
+         perror("Please verify your JSON and try again");
+         exit(EXIT_FAILURE);
+      } else {
+         char error_msg[180];
+         regerror(exec_comma_regexp_status, &comma_regexp, error_msg, sizeof(error_msg));
+         perror(error_msg);
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   regfree(&comma_regexp);
 
    Token t = {NUMBER, "keyword"};
 

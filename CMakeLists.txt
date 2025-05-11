@@ -6,4 +6,4 @@ set(CMAKE_C_STANDARD 23)
 add_executable(untitled main.c
         include/json-parser.h
         include/lexer.h
-        include/lexer.c)
+)
