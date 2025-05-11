@@ -31,6 +31,21 @@ typedef struct {
    char *type;
 }Token;
 
+static int validate(char code) {
+   switch (code) {
+      case '{':
+         return 1;
+      case '[':
+         return 1;
+      case '}':
+         return 1;
+      case ']':
+         return 1;
+      default:
+         return 0;
+   }
+}
+
 static const char* rmwhitespaces(const char *code) {
    if (strlen(code) >= CHAR_MAX) {
       perror("Erro while trying to allocate string. Please verify the length");
@@ -43,6 +58,16 @@ static const char* rmwhitespaces(const char *code) {
    strncpy(result, code, sizeof(result));
 
    for (int i = 0; i < strlen(result); i++) {
+      if (i == 0 || i == (strlen(result) - 1)) {
+         int is_valid = validate(result[i]);
+
+         if (!is_valid) {
+            perror("Please specify a valid JSON string");
+            exit(EXIT_FAILURE);
+            break;
+         }
+      }
+
       char* vp = &result[i];
       const int spc = isspace((int)result[i]);
 
@@ -71,12 +96,12 @@ static Token tokenize(char *code) {
       if (exec_comma_regexp_status == REG_NOMATCH) {
          perror("Please verify your JSON and try again");
          exit(EXIT_FAILURE);
-      } else {
-         char error_msg[180];
-         regerror(exec_comma_regexp_status, &comma_regexp, error_msg, sizeof(error_msg));
-         perror(error_msg);
-         exit(EXIT_FAILURE);
       }
+
+      char error_msg[180];
+      regerror(exec_comma_regexp_status, &comma_regexp, error_msg, sizeof(error_msg));
+      perror(error_msg);
+      exit(EXIT_FAILURE);
    }
 
    regfree(&comma_regexp);
