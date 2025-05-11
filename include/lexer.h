@@ -55,7 +55,7 @@ static const char* rmwhitespaces(const char *code) {
    }
 
    char result[1024];
-   const char* cp = &result;
+   const char* cp = (const char*)&result;
    char* empty_string = "";
 
    strncpy(result, code, sizeof(result));
@@ -77,7 +77,7 @@ static const char* rmwhitespaces(const char *code) {
          continue;
       }
 
-      *vp = empty_string;
+      *vp = (char)empty_string;
    }
 
    return cp;
