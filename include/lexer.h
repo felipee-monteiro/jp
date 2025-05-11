@@ -55,19 +55,19 @@ static const char* rmwhitespaces(const char *code) {
    }
 
    char result[1024];
-   const char* cp = (const char*)&result;
-   char* empty_string = "";
+   const static char* cp = (const char*)&result;
 
    strncpy(result, code, sizeof(result));
 
    for (int i = 0; i < strlen(result); i++) {
-         int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
+      char* empty_string = "";
+      const static int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
 
-         if (!is_valid) {
-            perror("Please specify a valid JSON string");
-            exit(EXIT_FAILURE);
-            break;
-         }
+      if (!is_valid) {
+         perror("Please specify a valid JSON string");
+         exit(EXIT_FAILURE);
+         break;
+      }
 
       char* vp = &result[i];
       const int spc = isspace((int)result[i]);
