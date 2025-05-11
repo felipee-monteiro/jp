@@ -1,0 +1,1 @@
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/untitled.dir/link.d CMakeFiles/untitled.dir/main.c.o -o untitled

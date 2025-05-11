@@ -86,7 +86,7 @@ static const char* rmwhitespaces(const char *code) {
 static Token tokenize(char *code) {
    const char* code_without_spaces = rmwhitespaces(code);
    const static char* comma_pattern = "^\"+$";
-   int exec_comma_regexp_status = 0;
+   static int exec_comma_regexp_status = 0;
    regex_t comma_regexp;
 
    regcomp(&comma_regexp, comma_pattern, REG_NOSUB);

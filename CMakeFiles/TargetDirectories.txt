@@ -1,0 +1,3 @@
+/home/felipe/CLionProjects/untitled/CMakeFiles/untitled.dir
+/home/felipe/CLionProjects/untitled/CMakeFiles/edit_cache.dir
+/home/felipe/CLionProjects/untitled/CMakeFiles/rebuild_cache.dir
