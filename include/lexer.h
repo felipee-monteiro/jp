@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#define VALIDATION_ERROR "Please verify your JSON and try again"
+
 enum JsonToken {
    NUMBER,
    STRING,
@@ -28,7 +30,7 @@ enum JsonToken {
 
 typedef struct {
    enum JsonToken value;
-   char *type;
+   char *kind;
 }Token;
 
 static int validate_open_and_close_ident(char o, char c) {
@@ -48,35 +50,33 @@ static const char* rmwhitespaces(const char *code) {
    int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
 
    if (!is_valid) {
-      perror("Please specify a valid JSON string");
+      perror(VALIDATION_ERROR);
       exit(EXIT_FAILURE);
    }
 
    for (int i = 0; i < strlen(result); i++) {
-      const static char* empty_string = "";
+      const static char* empty_string = "^\"$";
       char* vp = &result[i];
-
-      char* value = (char*)result[i];
       const int spc = isspace((int)result[i]);
 
       if (spc == 0x00) {
-         if ((char)value == '\"') {
-            regex_t regex;
-            int ret;
-            const char *padrao = "\\b\"\\b";
+         regex_t regex;
 
-            regcomp(&regex, padrao, REG_NOSUB);
+         static int ret;
+         const char *padrao = "^:$";
 
-            ret = regexec(&regex, code, 0, NULL, 0);
+         regcomp(&regex, padrao, REG_EXTENDED);
 
-            if (!ret) {
-               printf("A string corresponde\n");
-            } else {
-               printf("A string NÃO corresponde.\n");
+         ret = regexec(&regex, code, 0, NULL, 0);
+
+         if (ret != 0) {
+            if (ret == REG_NOMATCH) {
+               perror(VALIDATION_ERROR);
+               exit(EXIT_FAILURE);
             }
-
-            regfree(&regex);
          }
+
+         regfree(&regex);
 
          continue;
       }
