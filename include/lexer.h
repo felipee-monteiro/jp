@@ -32,15 +32,7 @@ typedef struct {
 }Token;
 
 static int validate_open_and_close_ident(char o, char c) {
-   if (o == '{' && c == '}') {
-      return 1;
-   }
-
-   if (o == '[' && c == ']') {
-      return 1;
-   }
-
-   return 0;
+   return (o == '{' && c == '}' || (o == '[' && c == ']'));
 }
 
 static const char* rmwhitespaces(const char *code) {
@@ -62,12 +54,30 @@ static const char* rmwhitespaces(const char *code) {
 
    for (int i = 0; i < strlen(result); i++) {
       const static char* empty_string = "";
-
       char* vp = &result[i];
+
+      char* value = (char*)result[i];
       const int spc = isspace((int)result[i]);
 
       if (spc == 0x00) {
-         printf("token: %c\n", result[i]);
+         if ((char)value == '\"') {
+            regex_t regex;
+            int ret;
+            const char *padrao = "\\b\"\\b";
+
+            regcomp(&regex, padrao, REG_NOSUB);
+
+            ret = regexec(&regex, code, 0, NULL, 0);
+
+            if (!ret) {
+               printf("A string corresponde\n");
+            } else {
+               printf("A string NÃO corresponde.\n");
+            }
+
+            regfree(&regex);
+         }
+
          continue;
       }
 
