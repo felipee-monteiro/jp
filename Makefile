@@ -22,15 +22,8 @@ asm: $(GENERATED_ASM)
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^
-
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-%.o: %.S
-	$(AS) $(CFLAGS) -x assembler-with-cpp -c $< -o $@
-
-%.s: %.c
-	$(CC) $(CFLAGS) -S -fverbose-asm -masm=intel $< -o $@
+	$(shell mkdir asm)
+	$(CC) -S -fverbose-asm -masm=intel main.c -o asm/$@.S
 
 clean:
 	rm -f $(TARGET) $(OBJECTS) $(GENERATED_ASM)

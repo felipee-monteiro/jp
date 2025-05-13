@@ -5,4 +5,6 @@
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
+static void* parse_true(const static char* code);
+
 #endif //TOKENIZER_H
