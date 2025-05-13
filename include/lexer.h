@@ -34,10 +34,11 @@ typedef struct {
 }Token;
 
 static int validate_open_and_close_ident(char o, char c) {
-   return (o == '{' && c == '}' || (o == '[' && c == ']'));
+   return (o == '{' && c == '}') || (o == '[' && c == ']');
 }
 
-static const char* rmwhitespaces(const char *code) {
+__attribute__((hot, always_inline))
+static inline const char* rmwhitespaces(const char *code) {
    if (strlen(code) >= CHAR_MAX) {
       perror("Erro while trying to allocate string. Please verify the length");
       exit(EXIT_FAILURE);
@@ -55,7 +56,7 @@ static const char* rmwhitespaces(const char *code) {
    }
 
    for (int i = 0; i < strlen(result); i++) {
-      const static char* empty_string = "^\"$";
+      const char* empty_string = "";
       char* vp = &result[i];
       const int spc = isspace((int)result[i]);
 
@@ -87,7 +88,7 @@ static const char* rmwhitespaces(const char *code) {
    return result;
 }
 
-static void tokenize(char *code) {
+static inline void tokenize(char *code) {
    rmwhitespaces(code);
 }
 
