@@ -1,50 +1,36 @@
 	.file	"main.c"
-	.intel_syntax noprefix
-# GNU C17 (GCC) version 14.2.0 (x86_64-unknown-linux-gnu)
-#	compiled by GNU C version 14.2.0, GMP version 6.3.0, MPFR version 4.2.1, MPC version 1.3.1, isl version isl-0.26-GMP
-
-# GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-# options passed: -masm=intel -mtune=generic -march=x86-64
 	.text
 	.type	validate_open_and_close_ident, @function
 validate_open_and_close_ident:
 .LFB6:
 	.cfi_startproc
-	push	rbp	#
+	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	mov	rbp, rsp	#,
+	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	mov	edx, edi	# tmp100, o
-	mov	eax, esi	# tmp102, c
-	mov	BYTE PTR -4[rbp], dl	# o, tmp101
-	mov	BYTE PTR -8[rbp], al	# c, tmp103
-# include/lexer.h:37:    return (o == '{' && c == '}') || (o == '[' && c == ']');
-	cmp	BYTE PTR -4[rbp], 123	# o,
-	jne	.L2	#,
-# include/lexer.h:37:    return (o == '{' && c == '}') || (o == '[' && c == ']');
-	cmp	BYTE PTR -8[rbp], 125	# c,
-	je	.L3	#,
+	movl	%edi, %edx
+	movl	%esi, %eax
+	movb	%dl, -4(%rbp)
+	movb	%al, -8(%rbp)
+	cmpb	$123, -4(%rbp)
+	jne	.L2
+	cmpb	$125, -8(%rbp)
+	je	.L3
 .L2:
-# include/lexer.h:37:    return (o == '{' && c == '}') || (o == '[' && c == ']');
-	cmp	BYTE PTR -4[rbp], 91	# o,
-	jne	.L4	#,
-# include/lexer.h:37:    return (o == '{' && c == '}') || (o == '[' && c == ']');
-	cmp	BYTE PTR -8[rbp], 93	# c,
-	jne	.L4	#,
+	cmpb	$91, -4(%rbp)
+	jne	.L4
+	cmpb	$93, -8(%rbp)
+	jne	.L4
 .L3:
-# include/lexer.h:37:    return (o == '{' && c == '}') || (o == '[' && c == ']');
-	mov	eax, 1	# iftmp.0_1,
-# include/lexer.h:37:    return (o == '{' && c == '}') || (o == '[' && c == ']');
-	jmp	.L6	#
+	movl	$1, %eax
+	jmp	.L6
 .L4:
-# include/lexer.h:37:    return (o == '{' && c == '}') || (o == '[' && c == ']');
-	mov	eax, 0	# iftmp.0_1,
+	movl	$0, %eax
 .L6:
-# include/lexer.h:38: }
-	pop	rbp	#
+	popq	%rbp
 	.cfi_def_cfa 7, 8
-	ret	
+	ret
 	.cfi_endproc
 .LFE6:
 	.size	validate_open_and_close_ident, .-validate_open_and_close_ident
@@ -64,207 +50,157 @@ validate_open_and_close_ident:
 tokenize:
 .LFB8:
 	.cfi_startproc
-	push	rbp	#
+	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	mov	rbp, rsp	#,
+	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	push	rbx	#
-	sub	rsp, 1176	#,
+	pushq	%rbx
+	subq	$1176, %rsp
 	.cfi_offset 3, -24
-	mov	QWORD PTR -1176[rbp], rdi	# code, code
-# include/lexer.h:91: static inline void tokenize(char *code) {
-	mov	rax, QWORD PTR fs:40	# tmp121, MEM[(<address-space-1> long unsigned int *)40B]
-	mov	QWORD PTR -24[rbp], rax	# D.4199, tmp121
-	xor	eax, eax	# tmp121
-	mov	rax, QWORD PTR -1176[rbp]	# tmp122, code
-	mov	QWORD PTR -1152[rbp], rax	# code, tmp122
-# include/lexer.h:42:    if (strlen(code) >= CHAR_MAX) {
-	mov	rax, QWORD PTR -1152[rbp]	# tmp123, code
-	mov	rdi, rax	#, tmp123
-	call	strlen@PLT	#
-# include/lexer.h:42:    if (strlen(code) >= CHAR_MAX) {
-	cmp	rax, 126	# _4,
-	jbe	.L8	#,
-# include/lexer.h:43:       perror("Erro while trying to allocate string. Please verify the length");
-	lea	rax, .LC0[rip]	# tmp124,
-	mov	rdi, rax	#, tmp124
-	call	perror@PLT	#
-# include/lexer.h:44:       exit(EXIT_FAILURE);
-	mov	edi, 1	#,
-	call	exit@PLT	#
+	movq	%rdi, -1176(%rbp)
+	movq	%fs:40, %rax
+	movq	%rax, -24(%rbp)
+	xorl	%eax, %eax
+	movq	-1176(%rbp), %rax
+	movq	%rax, -1152(%rbp)
+	movq	-1152(%rbp), %rax
+	movq	%rax, %rdi
+	call	strlen@PLT
+	cmpq	$126, %rax
+	jbe	.L8
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	call	perror@PLT
+	movl	$1, %edi
+	call	exit@PLT
 .L8:
-# include/lexer.h:49:    strncpy(result, code, sizeof(result));
-	mov	rcx, QWORD PTR -1152[rbp]	# tmp125, code
-	lea	rax, -1056[rbp]	# tmp126,
-	mov	edx, 1024	#,
-	mov	rsi, rcx	#, tmp125
-	mov	rdi, rax	#, tmp126
-	call	strncpy@PLT	#
-# include/lexer.h:51:    int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
-	lea	rax, -1056[rbp]	# tmp127,
-	mov	rdi, rax	#, tmp127
-	call	strlen@PLT	#
-# include/lexer.h:51:    int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
-	sub	rax, 1	# _6,
-# include/lexer.h:51:    int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
-	movzx	eax, BYTE PTR -1056[rbp+rax]	# _7, result[_6]
-# include/lexer.h:51:    int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
-	movsx	edx, al	# _8, _7
-# include/lexer.h:51:    int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
-	movzx	eax, BYTE PTR -1056[rbp]	# _9, result[0]
-# include/lexer.h:51:    int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
-	movsx	eax, al	# _10, _9
-	mov	esi, edx	#, _8
-	mov	edi, eax	#, _10
-	call	validate_open_and_close_ident	#
-	mov	DWORD PTR -1164[rbp], eax	# is_valid, tmp128
-# include/lexer.h:53:    if (!is_valid) {
-	cmp	DWORD PTR -1164[rbp], 0	# is_valid,
-	jne	.L9	#,
-# include/lexer.h:54:       perror(VALIDATION_ERROR);
-	lea	rax, .LC1[rip]	# tmp129,
-	mov	rdi, rax	#, tmp129
-	call	perror@PLT	#
-# include/lexer.h:55:       exit(EXIT_FAILURE);
-	mov	edi, 1	#,
-	call	exit@PLT	#
+	movq	-1152(%rbp), %rcx
+	leaq	-1056(%rbp), %rax
+	movl	$1024, %edx
+	movq	%rcx, %rsi
+	movq	%rax, %rdi
+	call	strncpy@PLT
+	leaq	-1056(%rbp), %rax
+	movq	%rax, %rdi
+	call	strlen@PLT
+	subq	$1, %rax
+	movzbl	-1056(%rbp,%rax), %eax
+	movsbl	%al, %edx
+	movzbl	-1056(%rbp), %eax
+	movsbl	%al, %eax
+	movl	%edx, %esi
+	movl	%eax, %edi
+	call	validate_open_and_close_ident
+	movl	%eax, -1164(%rbp)
+	cmpl	$0, -1164(%rbp)
+	jne	.L9
+	leaq	.LC1(%rip), %rax
+	movq	%rax, %rdi
+	call	perror@PLT
+	movl	$1, %edi
+	call	exit@PLT
 .L9:
-# include/lexer.h:58:    for (int i = 0; i < strlen(result); i++) {
-	mov	DWORD PTR -1160[rbp], 0	# i,
-# include/lexer.h:58:    for (int i = 0; i < strlen(result); i++) {
-	jmp	.L10	#
-.L14:
-# include/lexer.h:59:       const char* empty_string = "";
-	lea	rax, .LC2[rip]	# tmp130,
-	mov	QWORD PTR -1144[rbp], rax	# empty_string, tmp130
-# include/lexer.h:60:       char* vp = &result[i];
-	lea	rdx, -1056[rbp]	# tmp131,
-	mov	eax, DWORD PTR -1160[rbp]	# tmp133, i
-	cdqe
-	add	rax, rdx	# tmp134, tmp131
-	mov	QWORD PTR -1136[rbp], rax	# vp, tmp134
-# include/lexer.h:61:       const int spc = isspace((int)result[i]);
-	call	__ctype_b_loc@PLT	#
-# include/lexer.h:61:       const int spc = isspace((int)result[i]);
-	mov	rdx, QWORD PTR [rax]	# _17, *_16
-	mov	eax, DWORD PTR -1160[rbp]	# tmp136, i
-	cdqe
-	movzx	eax, BYTE PTR -1056[rbp+rax]	# _18, result[i_14]
-	movsx	rax, al	# _19, _18
-	add	rax, rax	# _20
-	add	rax, rdx	# _21, _17
-	movzx	eax, WORD PTR [rax]	# _22, *_21
-	movzx	eax, ax	# _23, _22
-# include/lexer.h:61:       const int spc = isspace((int)result[i]);
-	and	eax, 8192	# tmp137,
-	mov	DWORD PTR -1156[rbp], eax	# spc, tmp137
-# include/lexer.h:63:       if (spc == 0x00) {
-	cmp	DWORD PTR -1156[rbp], 0	# spc,
-	jne	.L11	#,
-# include/lexer.h:67:          const char *padrao = "^:$";
-	lea	rax, .LC3[rip]	# tmp138,
-	mov	QWORD PTR -1128[rbp], rax	# padrao, tmp138
-# include/lexer.h:69:          regcomp(&regex, padrao, REG_EXTENDED);
-	mov	rcx, QWORD PTR -1128[rbp]	# tmp139, padrao
-	lea	rax, -1120[rbp]	# tmp140,
-	mov	edx, 1	#,
-	mov	rsi, rcx	#, tmp139
-	mov	rdi, rax	#, tmp140
-	call	regcomp@PLT	#
-# include/lexer.h:71:          ret = regexec(&regex, code, 0, NULL, 0);
-	mov	rsi, QWORD PTR -1152[rbp]	# tmp141, code
-	lea	rax, -1120[rbp]	# tmp142,
-	mov	r8d, 0	#,
-	mov	ecx, 0	#,
-	mov	edx, 0	#,
-	mov	rdi, rax	#, tmp142
-	call	regexec@PLT	#
-# include/lexer.h:71:          ret = regexec(&regex, code, 0, NULL, 0);
-	mov	DWORD PTR ret.0[rip], eax	# ret, _26
-# include/lexer.h:73:          if (ret != 0) {
-	mov	eax, DWORD PTR ret.0[rip]	# ret.1_27, ret
-# include/lexer.h:73:          if (ret != 0) {
-	test	eax, eax	# ret.1_27
-	je	.L12	#,
-# include/lexer.h:74:             if (ret == REG_NOMATCH) {
-	mov	eax, DWORD PTR ret.0[rip]	# ret.2_28, ret
-# include/lexer.h:74:             if (ret == REG_NOMATCH) {
-	cmp	eax, 1	# ret.2_28,
-	jne	.L12	#,
-# include/lexer.h:75:                perror(VALIDATION_ERROR);
-	lea	rax, .LC1[rip]	# tmp143,
-	mov	rdi, rax	#, tmp143
-	call	perror@PLT	#
-# include/lexer.h:76:                exit(EXIT_FAILURE);
-	mov	edi, 1	#,
-	call	exit@PLT	#
-.L12:
-# include/lexer.h:80:          regfree(&regex);
-	lea	rax, -1120[rbp]	# tmp144,
-	mov	rdi, rax	#, tmp144
-	call	regfree@PLT	#
-# include/lexer.h:82:          continue;
-	jmp	.L13	#
-.L11:
-# include/lexer.h:85:       *vp = (char)empty_string;
-	mov	rax, QWORD PTR -1144[rbp]	# empty_string.3_29, empty_string
-	mov	edx, eax	# _30, empty_string.3_29
-# include/lexer.h:85:       *vp = (char)empty_string;
-	mov	rax, QWORD PTR -1136[rbp]	# tmp145, vp
-	mov	BYTE PTR [rax], dl	# *vp_15, _30
+	movl	$0, -1160(%rbp)
+	jmp	.L10
 .L13:
-# include/lexer.h:58:    for (int i = 0; i < strlen(result); i++) {
-	add	DWORD PTR -1160[rbp], 1	# i,
+	leaq	.LC2(%rip), %rax
+	movq	%rax, -1144(%rbp)
+	leaq	-1056(%rbp), %rdx
+	movl	-1160(%rbp), %eax
+	cltq
+	addq	%rdx, %rax
+	movq	%rax, -1136(%rbp)
+	call	__ctype_b_loc@PLT
+	movq	(%rax), %rdx
+	movl	-1160(%rbp), %eax
+	cltq
+	movzbl	-1056(%rbp,%rax), %eax
+	movsbq	%al, %rax
+	addq	%rax, %rax
+	addq	%rdx, %rax
+	movzwl	(%rax), %eax
+	movzwl	%ax, %eax
+	andl	$8192, %eax
+	movl	%eax, -1156(%rbp)
+	cmpl	$0, -1156(%rbp)
+	jne	.L11
+	leaq	.LC3(%rip), %rax
+	movq	%rax, -1128(%rbp)
+	movq	-1128(%rbp), %rcx
+	leaq	-1120(%rbp), %rax
+	movl	$1, %edx
+	movq	%rcx, %rsi
+	movq	%rax, %rdi
+	call	regcomp@PLT
+	movq	-1152(%rbp), %rsi
+	leaq	-1120(%rbp), %rax
+	movl	$0, %r8d
+	movl	$0, %ecx
+	movl	$0, %edx
+	movq	%rax, %rdi
+	call	regexec@PLT
+	movl	%eax, ret.0(%rip)
+	movl	ret.0(%rip), %eax
+	testl	%eax, %eax
+	je	.L12
+	movl	ret.0(%rip), %eax
+	cmpl	$1, %eax
+	jne	.L12
+	leaq	.LC1(%rip), %rax
+	movq	%rax, %rdi
+	call	perror@PLT
+	movl	$1, %edi
+	call	exit@PLT
+.L12:
+	leaq	-1120(%rbp), %rax
+	movq	%rax, %rdi
+	call	regfree@PLT
+.L11:
+	addl	$1, -1160(%rbp)
 .L10:
-# include/lexer.h:58:    for (int i = 0; i < strlen(result); i++) {
-	mov	eax, DWORD PTR -1160[rbp]	# tmp146, i
-	movsx	rbx, eax	# _32, tmp146
-# include/lexer.h:58:    for (int i = 0; i < strlen(result); i++) {
-	lea	rax, -1056[rbp]	# tmp147,
-	mov	rdi, rax	#, tmp147
-	call	strlen@PLT	#
-# include/lexer.h:58:    for (int i = 0; i < strlen(result); i++) {
-	cmp	rbx, rax	# _32, _33
-	jb	.L14	#,
-# include/lexer.h:93: }
-	nop	
-	mov	rax, QWORD PTR -24[rbp]	# tmp148, D.4199
-	sub	rax, QWORD PTR fs:40	# tmp148, MEM[(<address-space-1> long unsigned int *)40B]
-	je	.L16	#,
-	call	__stack_chk_fail@PLT	#
-.L16:
-	mov	rbx, QWORD PTR -8[rbp]	#,
-	leave	
+	movl	-1160(%rbp), %eax
+	movslq	%eax, %rbx
+	leaq	-1056(%rbp), %rax
+	movq	%rax, %rdi
+	call	strlen@PLT
+	cmpq	%rax, %rbx
+	jb	.L13
+	nop
+	nop
+	movq	-24(%rbp), %rax
+	subq	%fs:40, %rax
+	je	.L14
+	call	__stack_chk_fail@PLT
+.L14:
+	movq	-8(%rbp), %rbx
+	leave
 	.cfi_def_cfa 7, 8
-	ret	
+	ret
 	.cfi_endproc
 .LFE8:
 	.size	tokenize, .-tokenize
 	.section	.rodata
 .LC4:
-	.string	"{\n\n\n\n\n\n\n\"test\": \"ops\"}"
+	.string	"{\"test\": \"ops\"}"
 	.text
 	.globl	main
 	.type	main, @function
 main:
 .LFB9:
 	.cfi_startproc
-	push	rbp	#
+	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
-	mov	rbp, rsp	#,
+	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-# main.c:4:     tokenize("{\n\n\n\n\n\n\n\"test\": \"ops\"}");
-	lea	rax, .LC4[rip]	# tmp100,
-	mov	rdi, rax	#, tmp100
-	call	tokenize	#
-# main.c:6:     return 0;
-	mov	eax, 0	# _3,
-# main.c:7: }
-	pop	rbp	#
+	leaq	.LC4(%rip), %rax
+	movq	%rax, %rdi
+	call	tokenize
+	movl	$0, %eax
+	popq	%rbp
 	.cfi_def_cfa 7, 8
-	ret	
+	ret
 	.cfi_endproc
 .LFE9:
 	.size	main, .-main
