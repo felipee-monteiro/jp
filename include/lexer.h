@@ -38,7 +38,7 @@ static int validate_open_and_close_ident(char o, char c) {
 }
 
 __attribute__((hot, always_inline))
-static inline const char* rmwhitespaces(const char *code) {
+static inline void rmwhitespaces(const char *code) {
    if (strlen(code) >= CHAR_MAX) {
       perror("Erro while trying to allocate string. Please verify the length");
       exit(EXIT_FAILURE);
@@ -78,14 +78,8 @@ static inline const char* rmwhitespaces(const char *code) {
          }
 
          regfree(&regex);
-
-         continue;
       }
-
-      *vp = (char)empty_string;
    }
-
-   return result;
 }
 
 static inline void tokenize(char *code) {
