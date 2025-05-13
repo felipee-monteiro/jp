@@ -9,29 +9,9 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#include "tokenizer.h"
+
 #define VALIDATION_ERROR "Please verify your JSON and try again"
-
-enum JsonToken {
-   NUMBER,
-   STRING,
-   LBRACE,
-   RBRACE,
-   LBRACK,
-   RBRACK,
-   TRUE_LITERAL,
-   FALSE_LITERAL,
-   NULL_LITERAL,
-   WHITESPACE,
-   COLON,
-   COMMA,
-   ILLEGAL,
-   EOS
-};
-
-typedef struct {
-   enum JsonToken value;
-   char *kind;
-}Token;
 
 static int validate_open_and_close_ident(char o, char c) {
    return (o == '{' && c == '}') || (o == '[' && c == ']');
@@ -56,28 +36,15 @@ static inline void rmwhitespaces(const char *code) {
    }
 
    for (int i = 0; i < strlen(result); i++) {
-      const char* empty_string = "";
-      char* vp = &result[i];
-      const int spc = isspace((int)result[i]);
+      char l = result[i];
+      const int spc = isspace((int)l);
 
       if (spc == 0x00) {
-         regex_t regex;
+         Token t = get_one_char_token(l);
 
-         static int ret;
-         const char *padrao = "^:$";
+         printf("um %s foi identificado\n", t.kind);
 
-         regcomp(&regex, padrao, REG_EXTENDED);
-
-         ret = regexec(&regex, code, 0, NULL, 0);
-
-         if (ret != 0) {
-            if (ret == REG_NOMATCH) {
-               perror(VALIDATION_ERROR);
-               exit(EXIT_FAILURE);
-            }
-         }
-
-         regfree(&regex);
+        // printf("%s\n", t.kind);
       }
    }
 }
