@@ -1,7 +1,7 @@
 #include "include/lexer.h"
 
 int main(void) {
-    Token tokens = tokenize("{\n\n\n\n\n\"test\": true}");
+    tokenize("{\n\n\n\n\n\n\n\"test\": \"ops\"}");
 
     return 0;
 }

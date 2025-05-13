@@ -6,7 +6,10 @@
 #include <regex.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <limits.h>
+
+#define VALIDATION_ERROR "Please verify your JSON and try again"
 
 enum JsonToken {
    NUMBER,
@@ -27,43 +30,66 @@ enum JsonToken {
 
 typedef struct {
    enum JsonToken value;
-   char *type;
+   char *kind;
 }Token;
 
-static const char* rmwhitespaces(const char *code) {
+static int validate_open_and_close_ident(char o, char c) {
+   return (o == '{' && c == '}') || (o == '[' && c == ']');
+}
+
+__attribute__((hot, always_inline))
+static inline const char* rmwhitespaces(const char *code) {
    if (strlen(code) >= CHAR_MAX) {
       perror("Erro while trying to allocate string. Please verify the length");
+      exit(EXIT_FAILURE);
    }
 
    char result[1024];
-   const char* cp = &result;
 
    strncpy(result, code, sizeof(result));
 
+   int is_valid = validate_open_and_close_ident(result[0], result[strlen(result) - 1]);
+
+   if (!is_valid) {
+      perror(VALIDATION_ERROR);
+      exit(EXIT_FAILURE);
+   }
+
    for (int i = 0; i < strlen(result); i++) {
+      const char* empty_string = "";
       char* vp = &result[i];
       const int spc = isspace((int)result[i]);
 
       if (spc == 0x00) {
-         //TODO: integrate tokenizer
+         regex_t regex;
+
+         static int ret;
+         const char *padrao = "^:$";
+
+         regcomp(&regex, padrao, REG_EXTENDED);
+
+         ret = regexec(&regex, code, 0, NULL, 0);
+
+         if (ret != 0) {
+            if (ret == REG_NOMATCH) {
+               perror(VALIDATION_ERROR);
+               exit(EXIT_FAILURE);
+            }
+         }
+
+         regfree(&regex);
+
          continue;
       }
 
-      *vp = '\\';
+      *vp = (char)empty_string;
    }
 
-   return cp;
+   return result;
 }
 
-static Token tokenize(char *code) {
-   const char* code_without_spaces = rmwhitespaces(code);
-   regex_t regexp;
-
-   printf("%s", code_without_spaces);
-
-   Token t = {NUMBER, "keyword"};
-
-   return t;
+static inline void tokenize(char *code) {
+   rmwhitespaces(code);
 }
 
 #endif //LEXER_H
