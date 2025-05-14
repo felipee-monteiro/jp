@@ -3,7 +3,6 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include <regex.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -18,7 +17,7 @@ static int validate_open_and_close_ident(char o, char c) {
 }
 
 __attribute__((hot, always_inline))
-static inline void rmwhitespaces(const char *code) {
+static inline void transform(const char *code) {
    if (strlen(code) >= CHAR_MAX) {
       perror("Erro while trying to allocate string. Please verify the length");
       exit(EXIT_FAILURE);
@@ -39,18 +38,25 @@ static inline void rmwhitespaces(const char *code) {
       char l = result[i];
       const int spc = isspace((int)l);
 
-      if (spc == 0x00) {
+      if (!spc) {
          Token t = get_one_char_token(l);
 
-         printf("um %s foi identificado\n", t.kind);
+         if (t.kind == "OBJECT") {
+            char* tk;
 
-        // printf("%s\n", t.kind);
+            tk = strtok(result, "{}");
+
+            do {
+               printf("token: %s\n", tk);
+               tk = strtok(NULL, ",");
+            } while (tk != NULL);
+         }
       }
    }
 }
 
 static inline void tokenize(char *code) {
-   rmwhitespaces(code);
+   transform(code);
 }
 
 #endif //LEXER_H
