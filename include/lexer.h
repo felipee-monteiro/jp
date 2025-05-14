@@ -3,42 +3,21 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include <regex.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <limits.h>
 
+#include "tokenizer.h"
+
 #define VALIDATION_ERROR "Please verify your JSON and try again"
-
-enum JsonToken {
-   NUMBER,
-   STRING,
-   LBRACE,
-   RBRACE,
-   LBRACK,
-   RBRACK,
-   TRUE_LITERAL,
-   FALSE_LITERAL,
-   NULL_LITERAL,
-   WHITESPACE,
-   COLON,
-   COMMA,
-   ILLEGAL,
-   EOS
-};
-
-typedef struct {
-   enum JsonToken value;
-   char *kind;
-}Token;
 
 static int validate_open_and_close_ident(char o, char c) {
    return (o == '{' && c == '}') || (o == '[' && c == ']');
 }
 
 __attribute__((hot, always_inline))
-static inline void rmwhitespaces(const char *code) {
+static inline void transform(const char *code) {
    if (strlen(code) >= CHAR_MAX) {
       perror("Erro while trying to allocate string. Please verify the length");
       exit(EXIT_FAILURE);
@@ -56,34 +35,28 @@ static inline void rmwhitespaces(const char *code) {
    }
 
    for (int i = 0; i < strlen(result); i++) {
-      const char* empty_string = "";
-      char* vp = &result[i];
-      const int spc = isspace((int)result[i]);
+      char l = result[i];
+      const int spc = isspace((int)l);
 
-      if (spc == 0x00) {
-         regex_t regex;
+      if (!spc) {
+         Token t = get_one_char_token(l);
 
-         static int ret;
-         const char *padrao = "^:$";
+         if (t.kind == "OBJECT") {
+            char* tk;
 
-         regcomp(&regex, padrao, REG_EXTENDED);
+            tk = strtok(result, "{}");
 
-         ret = regexec(&regex, code, 0, NULL, 0);
-
-         if (ret != 0) {
-            if (ret == REG_NOMATCH) {
-               perror(VALIDATION_ERROR);
-               exit(EXIT_FAILURE);
-            }
+            do {
+               printf("token: %s\n", tk);
+               tk = strtok(NULL, ",");
+            } while (tk != NULL);
          }
-
-         regfree(&regex);
       }
    }
 }
 
 static inline void tokenize(char *code) {
-   rmwhitespaces(code);
+   transform(code);
 }
 
 #endif //LEXER_H
