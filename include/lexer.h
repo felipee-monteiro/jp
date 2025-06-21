@@ -11,19 +11,23 @@
 #include "tokenizer.h"
 
 #define VALIDATION_ERROR "Please verify your JSON and try again"
+#define ALLOC_ERROR "Error while trying to allocate resources, so fuck you :D"
+#define DELIMITER " "
+#define MAX_PER_LINE_BUFFER_LENGTH 1024
 
 static int validate_open_and_close_ident(char o, char c) {
    return (o == '{' && c == '}') || (o == '[' && c == ']');
 }
 
-__attribute__((hot, always_inline))
-static inline void transform(const char *code) {
-   if (strlen(code) >= CHAR_MAX) {
-      perror("Erro while trying to allocate string. Please verify the length");
+static void transform(const char *code) {
+   int llength = strlen(code);
+
+	if (llength > MAX_PER_LINE_BUFFER_LENGTH || llength >= CHAR_MAX) {
+      perror(ALLOC_ERROR);
       exit(EXIT_FAILURE);
    }
 
-   char result[1024];
+   char result[MAX_PER_LINE_BUFFER_LENGTH];
 
    strncpy(result, code, sizeof(result));
 
@@ -34,28 +38,30 @@ static inline void transform(const char *code) {
       exit(EXIT_FAILURE);
    }
 
-   for (int i = 0; i < strlen(result); i++) {
+   for (size_t i = 0; i < strlen(result); ++i) {
       char l = result[i];
-      const int spc = isspace((int)l);
+		const int li = (int)l;
+      const int spc = isspace(li);
+		const int blk = isblank(li);
 
-      if (!spc) {
-         Token t = get_one_char_token(l);
-
-         if (t.kind == "OBJECT") {
+      if (!spc && !blk) {		
+			Token t = get_one_char_token(l);
+					
+         if (strcmp(t.kind, "OBJECT") == 0) {
             char* tk;
 
-            tk = strtok(result, "{}");
+            tk = strtok(result, DELIMITER);
 
-            do {
-               printf("token: %s\n", tk);
-               tk = strtok(NULL, ",");
-            } while (tk != NULL);
+            while (tk != NULL) {
+					printf("Token: %s\n", tk);
+					tk = strtok(NULL, DELIMITER);
+				}
          }
       }
    }
 }
 
-static inline void tokenize(char *code) {
+static void tokenize(char *code) {
    transform(code);
 }
 

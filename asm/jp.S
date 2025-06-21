@@ -14,6 +14,7 @@
 get_one_char_token:
 .LFB6:
 	.cfi_startproc
+	endbr64
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
@@ -34,7 +35,7 @@ get_one_char_token:
 	movslq	%ecx, %rcx
 	leaq	.L4(%rip), %rsi
 	addq	%rsi, %rcx
-	jmp	*%rcx
+	notrack jmp	*%rcx
 	.section	.rodata
 	.align 4
 	.align 4
@@ -134,6 +135,7 @@ get_one_char_token:
 validate_open_and_close_ident:
 .LFB7:
 	.cfi_startproc
+	endbr64
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
@@ -167,139 +169,177 @@ validate_open_and_close_ident:
 	.section	.rodata
 	.align 8
 .LC4:
-	.string	"Erro while trying to allocate string. Please verify the length"
+	.string	"Error while trying to allocate resources, so fuck you :D"
 	.align 8
 .LC5:
 	.string	"Please verify your JSON and try again"
 .LC6:
-	.string	"{}"
+	.string	" "
 .LC7:
-	.string	"token: %s\n"
-.LC8:
-	.string	","
+	.string	"Token: %s\n"
 	.text
-	.type	tokenize, @function
-tokenize:
-.LFB9:
+	.type	transform, @function
+transform:
+.LFB8:
 	.cfi_startproc
+	endbr64
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	pushq	%rbx
-	subq	$1112, %rsp
-	.cfi_offset 3, -24
+	subq	$1120, %rsp
 	movq	%rdi, -1112(%rbp)
 	movq	%fs:40, %rax
-	movq	%rax, -24(%rbp)
+	movq	%rax, -8(%rbp)
 	xorl	%eax, %eax
 	movq	-1112(%rbp), %rax
-	movq	%rax, -1088(%rbp)
-	movq	-1088(%rbp), %rax
 	movq	%rax, %rdi
 	call	strlen@PLT
-	cmpq	$126, %rax
-	jbe	.L18
+	movl	%eax, -1092(%rbp)
+	cmpl	$1024, -1092(%rbp)
+	jg	.L18
+	cmpl	$126, -1092(%rbp)
+	jle	.L19
+.L18:
 	leaq	.LC4(%rip), %rax
 	movq	%rax, %rdi
 	call	perror@PLT
 	movl	$1, %edi
 	call	exit@PLT
-.L18:
-	movq	-1088(%rbp), %rcx
-	leaq	-1056(%rbp), %rax
+.L19:
+	movq	-1112(%rbp), %rcx
+	leaq	-1040(%rbp), %rax
 	movl	$1024, %edx
 	movq	%rcx, %rsi
 	movq	%rax, %rdi
 	call	strncpy@PLT
-	leaq	-1056(%rbp), %rax
+	leaq	-1040(%rbp), %rax
 	movq	%rax, %rdi
 	call	strlen@PLT
 	subq	$1, %rax
-	movzbl	-1056(%rbp,%rax), %eax
+	movzbl	-1040(%rbp,%rax), %eax
 	movsbl	%al, %edx
-	movzbl	-1056(%rbp), %eax
+	movzbl	-1040(%rbp), %eax
 	movsbl	%al, %eax
 	movl	%edx, %esi
 	movl	%eax, %edi
 	call	validate_open_and_close_ident
-	movl	%eax, -1100(%rbp)
-	cmpl	$0, -1100(%rbp)
-	jne	.L19
+	movl	%eax, -1088(%rbp)
+	cmpl	$0, -1088(%rbp)
+	jne	.L20
 	leaq	.LC5(%rip), %rax
 	movq	%rax, %rdi
 	call	perror@PLT
 	movl	$1, %edi
 	call	exit@PLT
-.L19:
-	movl	$0, -1096(%rbp)
-	jmp	.L20
-.L24:
-	movl	-1096(%rbp), %eax
-	cltq
-	movzbl	-1056(%rbp,%rax), %eax
-	movb	%al, -1101(%rbp)
+.L20:
+	movq	$0, -1072(%rbp)
+	jmp	.L21
+.L26:
+	leaq	-1040(%rbp), %rdx
+	movq	-1072(%rbp), %rax
+	addq	%rdx, %rax
+	movzbl	(%rax), %eax
+	movb	%al, -1093(%rbp)
+	movsbl	-1093(%rbp), %eax
+	movl	%eax, -1084(%rbp)
 	call	__ctype_b_loc@PLT
 	movq	(%rax), %rax
-	movsbq	-1101(%rbp), %rdx
+	movl	-1084(%rbp), %edx
+	movslq	%edx, %rdx
 	addq	%rdx, %rdx
 	addq	%rdx, %rax
 	movzwl	(%rax), %eax
 	movzwl	%ax, %eax
 	andl	$8192, %eax
-	movl	%eax, -1092(%rbp)
-	cmpl	$0, -1092(%rbp)
-	jne	.L21
-	movsbl	-1101(%rbp), %eax
+	movl	%eax, -1080(%rbp)
+	call	__ctype_b_loc@PLT
+	movq	(%rax), %rax
+	movl	-1084(%rbp), %edx
+	movslq	%edx, %rdx
+	addq	%rdx, %rdx
+	addq	%rdx, %rax
+	movzwl	(%rax), %eax
+	movzwl	%ax, %eax
+	andl	$1, %eax
+	movl	%eax, -1076(%rbp)
+	cmpl	$0, -1080(%rbp)
+	jne	.L22
+	cmpl	$0, -1076(%rbp)
+	jne	.L22
+	movsbl	-1093(%rbp), %eax
 	movl	%eax, %edi
 	call	get_one_char_token
 	movl	%eax, %ecx
 	movq	%rdx, %rax
-	movl	%ecx, -1072(%rbp)
-	movq	%rax, -1064(%rbp)
-	movq	-1064(%rbp), %rdx
-	leaq	.LC0(%rip), %rax
-	cmpq	%rax, %rdx
-	jne	.L21
-	leaq	-1056(%rbp), %rax
+	movl	%ecx, -1056(%rbp)
+	movq	%rax, -1048(%rbp)
+	movq	-1048(%rbp), %rax
+	leaq	.LC0(%rip), %rdx
+	movq	%rdx, %rsi
+	movq	%rax, %rdi
+	call	strcmp@PLT
+	testl	%eax, %eax
+	jne	.L22
+	leaq	-1040(%rbp), %rax
 	leaq	.LC6(%rip), %rdx
 	movq	%rdx, %rsi
 	movq	%rax, %rdi
 	call	strtok@PLT
-	movq	%rax, -1080(%rbp)
-.L23:
-	movq	-1080(%rbp), %rax
+	movq	%rax, -1064(%rbp)
+	jmp	.L24
+.L25:
+	movq	-1064(%rbp), %rax
 	movq	%rax, %rsi
 	leaq	.LC7(%rip), %rax
 	movq	%rax, %rdi
 	movl	$0, %eax
 	call	printf@PLT
-	leaq	.LC8(%rip), %rax
+	leaq	.LC6(%rip), %rax
 	movq	%rax, %rsi
 	movl	$0, %edi
 	call	strtok@PLT
-	movq	%rax, -1080(%rbp)
-	cmpq	$0, -1080(%rbp)
-	jne	.L23
+	movq	%rax, -1064(%rbp)
+.L24:
+	cmpq	$0, -1064(%rbp)
+	jne	.L25
+.L22:
+	addq	$1, -1072(%rbp)
 .L21:
-	addl	$1, -1096(%rbp)
-.L20:
-	movl	-1096(%rbp), %eax
-	movslq	%eax, %rbx
-	leaq	-1056(%rbp), %rax
+	leaq	-1040(%rbp), %rax
 	movq	%rax, %rdi
 	call	strlen@PLT
-	cmpq	%rax, %rbx
-	jb	.L24
+	cmpq	%rax, -1072(%rbp)
+	jb	.L26
 	nop
-	nop
-	movq	-24(%rbp), %rax
+	movq	-8(%rbp), %rax
 	subq	%fs:40, %rax
-	je	.L25
+	je	.L27
 	call	__stack_chk_fail@PLT
-.L25:
-	movq	-8(%rbp), %rbx
+.L27:
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE8:
+	.size	transform, .-transform
+	.type	tokenize, @function
+tokenize:
+.LFB9:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movq	%rdi, -8(%rbp)
+	movq	-8(%rbp), %rax
+	movq	%rax, %rdi
+	call	transform
+	nop
 	leave
 	.cfi_def_cfa 7, 8
 	ret
@@ -308,20 +348,21 @@ tokenize:
 	.size	tokenize, .-tokenize
 	.section	.rodata
 	.align 8
-.LC9:
-	.string	"{\"test\": true, \"test\": true, \"test\": true}"
+.LC8:
+	.string	"{\"test\": true, \"dev\": false, \"runTests\": {\"files\": [\"*.json\"]}}"
 	.text
 	.globl	main
 	.type	main, @function
 main:
 .LFB10:
 	.cfi_startproc
+	endbr64
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	leaq	.LC9(%rip), %rax
+	leaq	.LC8(%rip), %rax
 	movq	%rax, %rdi
 	call	tokenize
 	movl	$0, %eax
@@ -331,5 +372,21 @@ main:
 	.cfi_endproc
 .LFE10:
 	.size	main, .-main
-	.ident	"GCC: (GNU) 14.2.0"
+	.ident	"GCC: (Ubuntu 14.2.0-19ubuntu2) 14.2.0"
 	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	1f - 0f
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:
