@@ -11,7 +11,7 @@
 #include "tokenizer.h"
 
 #define VALIDATION_ERROR "Please verify your JSON and try again"
-#define ALLOC_ERROR "Error while trying to allocate resources, so fuck you :D"
+#define ALLOC_ERROR "Error while trying to allocate resources, check your values and try again."
 #define DELIMITER " "
 #define MAX_PER_LINE_BUFFER_LENGTH 1024
 
@@ -47,16 +47,16 @@ static void transform(const char *code) {
       if (!spc && !blk) {		
 			Token t = get_one_char_token(l);
 					
-         if (strcmp(t.kind, "OBJECT") == 0) {
+         if (strcmp(t.kind, "OBJECT") == 0 || strcmp(t.kind, "ARRAY") == 0) {
             char* tk;
 
             tk = strtok(result, DELIMITER);
 
             while (tk != NULL) {
-					printf("Token: %s\n", tk);
+					printf("First char from token: %s\n", get_one_char_token(tk[0]).kind);
 					tk = strtok(NULL, DELIMITER);
 				}
-         }
+         } 
       }
    }
 }

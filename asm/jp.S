@@ -6,8 +6,12 @@
 .LC1:
 	.string	"ARRAY"
 .LC2:
-	.string	"LITERAL"
+	.string	"TRUE_LITERAL"
 .LC3:
+	.string	"FALSE_LITERAL"
+.LC4:
+	.string	"NULL_LITERAL"
+.LC5:
 	.string	"ILLEGAL"
 	.text
 	.type	get_one_char_token, @function
@@ -104,7 +108,7 @@ get_one_char_token:
 	andq	%rsi, %rcx
 	orq	$7, %rcx
 	movq	%rcx, %rax
-	leaq	.LC2(%rip), %rdx
+	leaq	.LC3(%rip), %rdx
 	jmp	.L9
 .L6:
 	movq	%rax, %rsi
@@ -112,7 +116,7 @@ get_one_char_token:
 	andq	%rsi, %rcx
 	orq	$8, %rcx
 	movq	%rcx, %rax
-	leaq	.LC2(%rip), %rdx
+	leaq	.LC4(%rip), %rdx
 	jmp	.L9
 .L2:
 	movq	%rax, %rsi
@@ -120,7 +124,7 @@ get_one_char_token:
 	andq	%rsi, %rcx
 	orq	$12, %rcx
 	movq	%rcx, %rax
-	leaq	.LC3(%rip), %rdx
+	leaq	.LC5(%rip), %rdx
 .L9:
 	movl	%eax, %ecx
 	movl	%ecx, %eax
@@ -168,15 +172,15 @@ validate_open_and_close_ident:
 	.size	validate_open_and_close_ident, .-validate_open_and_close_ident
 	.section	.rodata
 	.align 8
-.LC4:
-	.string	"Error while trying to allocate resources, so fuck you :D"
-	.align 8
-.LC5:
-	.string	"Please verify your JSON and try again"
 .LC6:
-	.string	" "
+	.string	"Error while trying to allocate resources, check your values and try again."
+	.align 8
 .LC7:
-	.string	"Token: %s\n"
+	.string	"Please verify your JSON and try again"
+.LC8:
+	.string	" "
+.LC9:
+	.string	"First char from token: %s\n"
 	.text
 	.type	transform, @function
 transform:
@@ -202,7 +206,7 @@ transform:
 	cmpl	$126, -1092(%rbp)
 	jle	.L19
 .L18:
-	leaq	.LC4(%rip), %rax
+	leaq	.LC6(%rip), %rax
 	movq	%rax, %rdi
 	call	perror@PLT
 	movl	$1, %edi
@@ -228,7 +232,7 @@ transform:
 	movl	%eax, -1088(%rbp)
 	cmpl	$0, -1088(%rbp)
 	jne	.L20
-	leaq	.LC5(%rip), %rax
+	leaq	.LC7(%rip), %rax
 	movq	%rax, %rdi
 	call	perror@PLT
 	movl	$1, %edi
@@ -236,7 +240,7 @@ transform:
 .L20:
 	movq	$0, -1072(%rbp)
 	jmp	.L21
-.L26:
+.L27:
 	leaq	-1040(%rbp), %rdx
 	movq	-1072(%rbp), %rax
 	addq	%rdx, %rax
@@ -281,29 +285,44 @@ transform:
 	movq	%rax, %rdi
 	call	strcmp@PLT
 	testl	%eax, %eax
+	je	.L23
+	movq	-1048(%rbp), %rax
+	leaq	.LC1(%rip), %rdx
+	movq	%rdx, %rsi
+	movq	%rax, %rdi
+	call	strcmp@PLT
+	testl	%eax, %eax
 	jne	.L22
+.L23:
 	leaq	-1040(%rbp), %rax
-	leaq	.LC6(%rip), %rdx
+	leaq	.LC8(%rip), %rdx
 	movq	%rdx, %rsi
 	movq	%rax, %rdi
 	call	strtok@PLT
 	movq	%rax, -1064(%rbp)
-	jmp	.L24
-.L25:
+	jmp	.L25
+.L26:
 	movq	-1064(%rbp), %rax
+	movzbl	(%rax), %eax
+	movsbl	%al, %eax
+	movl	%eax, %edi
+	call	get_one_char_token
+	movq	%rdx, %rcx
+	movq	%rcx, %rdx
+	movq	%rdx, %rax
 	movq	%rax, %rsi
-	leaq	.LC7(%rip), %rax
+	leaq	.LC9(%rip), %rax
 	movq	%rax, %rdi
 	movl	$0, %eax
 	call	printf@PLT
-	leaq	.LC6(%rip), %rax
+	leaq	.LC8(%rip), %rax
 	movq	%rax, %rsi
 	movl	$0, %edi
 	call	strtok@PLT
 	movq	%rax, -1064(%rbp)
-.L24:
+.L25:
 	cmpq	$0, -1064(%rbp)
-	jne	.L25
+	jne	.L26
 .L22:
 	addq	$1, -1072(%rbp)
 .L21:
@@ -311,13 +330,13 @@ transform:
 	movq	%rax, %rdi
 	call	strlen@PLT
 	cmpq	%rax, -1072(%rbp)
-	jb	.L26
+	jb	.L27
 	nop
 	movq	-8(%rbp), %rax
 	subq	%fs:40, %rax
-	je	.L27
+	je	.L28
 	call	__stack_chk_fail@PLT
-.L27:
+.L28:
 	leave
 	.cfi_def_cfa 7, 8
 	ret
@@ -348,7 +367,7 @@ tokenize:
 	.size	tokenize, .-tokenize
 	.section	.rodata
 	.align 8
-.LC8:
+.LC10:
 	.string	"{\"test\": true, \"dev\": false, \"runTests\": {\"files\": [\"*.json\"]}}"
 	.text
 	.globl	main
@@ -362,7 +381,7 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	leaq	.LC8(%rip), %rax
+	leaq	.LC10(%rip), %rax
 	movq	%rax, %rdi
 	call	tokenize
 	movl	$0, %eax

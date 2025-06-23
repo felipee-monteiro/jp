@@ -38,17 +38,17 @@ static Token get_one_char_token(char c) {
         case 't':
             return (Token){
                 TRUE_LITERAL,
-                "LITERAL"
+                "TRUE_LITERAL"
             };
         case 'f':
             return (Token){
                 FALSE_LITERAL,
-                "LITERAL"
+                "FALSE_LITERAL"
             };
         case 'n':
             return (Token){
                 NULL_LITERAL,
-                "LITERAL"
+                "NULL_LITERAL"
             };
         default:
             return (Token){
