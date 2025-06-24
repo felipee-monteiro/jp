@@ -7,14 +7,11 @@ CFLAGS = -O3 -march=native -flto -no-pie \
          main.c
 
 SRC_C = $(wildcard main)
-SRC_ASM = $(wildcard asm/*.S)
 OBJ_C = $(SRC_C:.c=.o)
-OBJ_ASM = $(SRC_ASM:.S=.S)
-OBJECTS = $(OBJ_C) $(OBJ_ASM)
+OBJECTS = $(OBJ_C) 
 TARGET = jp
-GENERATED_ASM = $(SRC_C:main.c=.s)
 
-.PHONY: all clean asm
+.PHONY: all clean 
 
 all: $(TARGET)
 
@@ -22,7 +19,6 @@ asm: $(GENERATED_ASM)
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^
-	$(CC) -S -Xassembler -masm=intel main.c -o asm/$@.S
 
 clean:
-	rm -f $(TARGET) $(OBJECTS) $(GENERATED_ASM)
+	rm -f $(TARGET) $(OBJECTS) 
